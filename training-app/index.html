@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Training</title>
+<meta name="theme-color" content="#2350D8">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Training">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" type="image/png" href="icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#E9EDF2; --surface:#FFFFFF; --ink:#18202C; --muted:#5A6576; --line:#D3DAE3;
+  --accent:#2350D8; --accent-ink:#FFFFFF; --plate:#F0BE2C; --plate-ink:#2A2100; --danger:#C2332B;
+  color-scheme:light;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#10141A; --surface:#1A2029; --ink:#E7EBF0; --muted:#97A2B1; --line:#2C3542;
+    --accent:#6F8FF6; --accent-ink:#0D1424; --plate:#F2C640; --plate-ink:#231B00; --danger:#F07468;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#10141A; --surface:#1A2029; --ink:#E7EBF0; --muted:#97A2B1; --line:#2C3542;
+  --accent:#6F8FF6; --accent-ink:#0D1424; --plate:#F2C640; --plate-ink:#231B00; --danger:#F07468;
+  color-scheme:dark;
+}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Barlow",system-ui,-apple-system,"Segoe UI",sans-serif;font-size:17px;line-height:1.45;-webkit-text-size-adjust:100%}
+.wrap{max-width:560px;margin:0 auto;padding:20px 16px 96px}
+h1,h2,h3,.num{font-family:"Barlow Condensed","Arial Narrow",system-ui,sans-serif;font-weight:700;letter-spacing:.01em;margin:0}
+h1{font-size:2.1rem;line-height:1.05}
+h2{font-size:1.45rem;margin:28px 0 10px}
+.muted{color:var(--muted)}
+button{font:inherit;cursor:pointer;border:0;border-radius:10px;padding:12px 16px;background:var(--surface);color:var(--ink);border:1px solid var(--line)}
+button:focus-visible,input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);font-weight:600}
+.ghost{background:transparent;border-color:transparent;color:var(--accent);padding:8px 10px}
+.danger{color:var(--danger);background:transparent;border-color:var(--line)}
+.block{width:100%}
+input{font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:10px 12px;width:100%;min-width:0}
+
+/* Hero: diese Woche */
+.week{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:20px;margin-top:16px}
+.week-top{display:flex;align-items:flex-end;justify-content:space-between;gap:12px}
+.week .num{font-size:4.2rem;line-height:.9}
+.week .num small{font-size:1.6rem;color:var(--muted)}
+.plates{display:flex;gap:10px;margin:16px 0 4px;flex-wrap:wrap}
+.plate{width:46px;height:46px;border-radius:50%;border:3px solid var(--line);position:relative}
+.plate::after{content:"";position:absolute;inset:50% auto auto 50%;width:10px;height:10px;margin:-5px 0 0 -5px;border-radius:50%;background:var(--bg);border:2px solid var(--line)}
+.plate.on{background:var(--plate);border-color:var(--plate)}
+.plate.on::after{border-color:var(--plate-ink);background:var(--surface)}
+.goal{display:flex;align-items:center;gap:6px}
+.goal button{padding:4px 12px}
+.hist{display:flex;gap:6px;align-items:flex-end;height:44px;margin-top:14px}
+.hist div{flex:1;background:var(--line);border-radius:4px 4px 0 0;min-height:4px}
+.hist div.hit{background:var(--accent)}
+.hist-l{display:flex;justify-content:space-between;font-size:.8rem;color:var(--muted);margin-top:4px}
+
+.row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 4px;border-bottom:1px solid var(--line);background:none;border-left:0;border-right:0;border-top:0;border-radius:0;width:100%;text-align:left}
+.row:last-child{border-bottom:0}
+.list{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:0 12px}
+.row .t{font-weight:600}
+.row .s{font-size:.9rem;color:var(--muted)}
+.empty{padding:18px 4px;color:var(--muted)}
+
+/* Editor */
+.bar{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:12px}
+.ex{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px;margin-top:14px}
+.ex-h{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.ex-h h3{font-size:1.35rem}
+.last{font-size:.88rem;color:var(--muted);margin:2px 0 10px}
+.set{display:grid;grid-template-columns:28px 1fr 1fr 40px;gap:8px;align-items:center;margin-bottom:8px}
+.set .i{color:var(--muted);font-weight:600;text-align:center}
+.set button{padding:8px 0;background:transparent;color:var(--muted)}
+.lbls{display:grid;grid-template-columns:28px 1fr 1fr 40px;gap:8px;font-size:.8rem;color:var(--muted);margin-bottom:4px}
+.add{display:flex;gap:8px;margin-top:18px}
+.add input{flex:1}
+.status{font-size:.85rem;color:var(--muted);min-height:1.2em}
+.chart{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px;overflow-x:auto}
+.foot{display:flex;gap:10px;margin-top:22px}
+.foot>*{flex:1}
+.note{font-size:.85rem;color:var(--muted);margin-top:24px}
+@media (prefers-reduced-motion:no-preference){.plate.on{transition:background .2s}}
+</style>
+</head>
+<body>
+<div class="wrap" id="app"><p class="muted">Lädt …</p></div>
+
+<script>
+(function(){
+  const app = document.getElementById('app');
+  let sessions = [];
+  let view = {name:'home'};
+  let draft = null;
+  let col = null;          // db collection
+  let mode = 'loading';    // 'db' | 'local'
+  let saveTimer = null, saving = false, pendingSave = false;
+
+  // ---------- helpers ----------
+  const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const num = v => { const n = parseFloat(String(v).replace(',', '.')); return isFinite(n) ? n : 0; };
+  const fmt = n => (Math.round(n*10)/10).toLocaleString('de-DE');
+  const todayISO = () => { const d = new Date(); d.setMinutes(d.getMinutes()-d.getTimezoneOffset()); return d.toISOString().slice(0,10); };
+  const parseDate = s => { const [y,m,d] = s.split('-').map(Number); return new Date(y, m-1, d); };
+  const fmtDate = s => parseDate(s).toLocaleDateString('de-DE', {weekday:'short', day:'numeric', month:'short'});
+  const weekStart = d => { const x = new Date(d.getFullYear(), d.getMonth(), d.getDate()); const wd = (x.getDay()+6)%7; x.setDate(x.getDate()-wd); return x; };
+  const volume = s => (s.exercises||[]).reduce((a,e)=>a+(e.sets||[]).reduce((b,t)=>b+num(t.reps)*num(t.kg),0),0);
+  const sorted = () => [...sessions].sort((a,b)=> (b.date||'').localeCompare(a.date||'') || (b.updatedAt||0)-(a.updatedAt||0));
+
+  function getGoal(){ try{ return parseInt(localStorage.getItem('goal')) || 2; }catch(e){ return 2; } }
+  function setGoal(g){ try{ localStorage.setItem('goal', String(g)); }catch(e){} }
+
+  function lastFor(name, excludeId){
+    const key = name.trim().toLowerCase();
+    for (const s of sorted()){
+      if (s.id === excludeId) continue;
+      const e = (s.exercises||[]).find(x => x.name.trim().toLowerCase() === key);
+      if (e && e.sets && e.sets.length) return {date:s.date, sets:e.sets};
+    }
+    return null;
+  }
+  function allExerciseNames(){
+    const m = new Map();
+    for (const s of sorted()) for (const e of (s.exercises||[])){
+      const k = e.name.trim().toLowerCase(); if (!m.has(k)) m.set(k, e.name.trim());
+    }
+    return [...m.values()];
+  }
+
+  // ---------- storage ----------
+  function localLoad(){ try{ sessions = JSON.parse(localStorage.getItem('sessions')||'[]'); }catch(e){ sessions = []; } }
+  function localSave(){ try{ localStorage.setItem('sessions', JSON.stringify(sessions)); }catch(e){} }
+
+  async function persist(s){
+    const body = {date:s.date, exercises:s.exercises, updatedAt:Date.now()};
+    if (mode === 'db'){ await col.doc(s.id).set(body); }
+    else {
+      const i = sessions.findIndex(x=>x.id===s.id);
+      const rec = {id:s.id, ...body};
+      if (i>=0) sessions[i]=rec; else sessions.push(rec);
+      localSave();
+    }
+  }
+  async function remove(id){
+    if (mode === 'db'){ await col.doc(id).delete(); }
+    else { sessions = sessions.filter(s=>s.id!==id); localSave(); }
+  }
+
+  function scheduleSave(){
+    setStatus('Ungespeicherte Änderungen');
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(flush, 700);
+  }
+  async function flush(){
+    clearTimeout(saveTimer);
+    if (!draft) return;
+    if (saving){ pendingSave = true; return; }
+    saving = true;
+    try{ await persist(draft); setStatus('Gespeichert'); }
+    catch(e){ setStatus('Speichern fehlgeschlagen. Bitte Verbindung prüfen.'); }
+    saving = false;
+    if (pendingSave){ pendingSave = false; flush(); }
+  }
+  function setStatus(t){ const el = document.getElementById('status'); if (el) el.textContent = t; }
+
+  function init(){
+    mode = 'local'; localLoad(); render();
+    if ('serviceWorker' in navigator) navigator.serviceWorker.register('service-worker.js').catch(()=>{});
+    try{ if (navigator.storage && navigator.storage.persist) navigator.storage.persist(); }catch(e){}
+  }
+
+  // ---------- views ----------
+  function render(){
+    if (view.name === 'edit') return renderEdit();
+    if (view.name === 'exercise') return renderExercise(view.ex);
+    renderHome();
+  }
+
+  function renderHome(){
+    const goal = getGoal();
+    const now = new Date();
+    const ws = weekStart(now);
+    const list = sorted();
+    const thisWeek = list.filter(s => weekStart(parseDate(s.date)).getTime() === ws.getTime()).length;
+
+    // letzte 8 Wochen
+    const weeks = [];
+    for (let i=7;i>=0;i--){
+      const w = new Date(ws); w.setDate(w.getDate()-7*i);
+      const c = list.filter(s => weekStart(parseDate(s.date)).getTime() === w.getTime()).length;
+      weeks.push(c);
+    }
+    const maxW = Math.max(goal, ...weeks, 1);
+    const plates = Array.from({length:Math.max(goal, thisWeek)}, (_,i)=>`<div class="plate ${i<thisWeek?'on':''}" aria-hidden="true"></div>`).join('');
+
+    const sess = list.length ? list.map(s => `
+      <button class="row" data-open="${esc(s.id)}">
+        <span><span class="t">${esc(fmtDate(s.date))}</span><br><span class="s">${esc((s.exercises||[]).map(e=>e.name).join(', ') || 'Noch keine Übungen')}</span></span>
+        <span class="s">${fmt(volume(s))} kg</span>
+      </button>`).join('') : `<div class="empty">Noch kein Training eingetragen. Leg mit „Training starten“ los.</div>`;
+
+    const names = allExerciseNames();
+    const exs = names.length ? names.map(n => {
+      const l = lastFor(n);
+      const top = l ? Math.max(...l.sets.map(t=>num(t.kg))) : 0;
+      return `<button class="row" data-ex="${esc(n)}"><span class="t">${esc(n)}</span><span class="s">zuletzt ${fmt(top)} kg</span></button>`;
+    }).join('') : `<div class="empty">Übungen erscheinen hier, sobald du sie einträgst.</div>`;
+
+    app.innerHTML = `
+      <h1>Training</h1>
+      <section class="week" aria-label="Diese Woche">
+        <div class="week-top">
+          <div>
+            <div class="muted">Diese Woche</div>
+            <div class="num">${thisWeek}<small> / ${goal}</small></div>
+          </div>
+          <div class="goal" aria-label="Wochenziel">
+            <span class="muted">Ziel</span>
+            <button data-goal="-1" aria-label="Ziel verringern">−</button>
+            <button data-goal="1" aria-label="Ziel erhöhen">+</button>
+          </div>
+        </div>
+        <div class="plates">${plates}</div>
+        <div class="muted">${thisWeek>=goal ? 'Wochenziel erreicht.' : `Noch ${goal-thisWeek} Training${goal-thisWeek===1?'':'s'} bis zum Wochenziel.`}</div>
+        <div class="hist" aria-label="Trainings der letzten 8 Wochen">${weeks.map(c=>`<div class="${c>=goal?'hit':''}" style="height:${Math.max(4,c/maxW*100)}%" title="${c} Training${c===1?'':'s'}"></div>`).join('')}</div>
+        <div class="hist-l"><span>vor 7 Wochen</span><span>jetzt</span></div>
+      </section>
+      <div style="margin-top:16px"><button class="primary block" id="new">Training starten</button></div>
+      <h2>Verlauf</h2>
+      <div class="list">${sess}</div>
+      <h2>Übungen</h2>
+      <div class="list">${exs}</div>
+      <h2>Sicherung</h2>
+      <p class="muted" style="font-size:.95rem;margin-top:0">Deine Daten liegen nur auf diesem Gerät. Exportiere ab und zu eine Sicherung, z. B. vor einem Handywechsel.</p>
+      <div class="foot" style="margin-top:8px">
+        <button id="exp">Exportieren</button>
+        <button id="imp">Importieren</button>
+      </div>
+      <input type="file" id="impfile" accept="application/json,.json" hidden>
+    `;
+    app.querySelector('#exp').onclick = async () => {
+      const data = JSON.stringify({version:1, exportedAt:new Date().toISOString(), goal:getGoal(), sessions}, null, 2);
+      const name = 'training-sicherung-' + todayISO() + '.json';
+      const file = new File([data], name, {type:'application/json'});
+      try{
+        if (navigator.canShare && navigator.canShare({files:[file]})){ await navigator.share({files:[file], title:'Trainings-Sicherung'}); return; }
+      }catch(e){ if (e && e.name === 'AbortError') return; }
+      const a = document.createElement('a'); a.href = URL.createObjectURL(file); a.download = name; document.body.appendChild(a); a.click(); a.remove();
+    };
+    app.querySelector('#imp').onclick = () => app.querySelector('#impfile').click();
+    app.querySelector('#impfile').onchange = async ev => {
+      const f = ev.target.files[0]; if (!f) return;
+      try{
+        const d = JSON.parse(await f.text());
+        if (!d || !Array.isArray(d.sessions)) throw new Error();
+        const byId = new Map(sessions.map(s=>[s.id,s]));
+        d.sessions.forEach(s => { if (s && s.id && s.date) byId.set(s.id, s); });
+        sessions = [...byId.values()]; localSave();
+        if (d.goal) setGoal(d.goal);
+        render(); alert(d.sessions.length + ' Trainings importiert.');
+      }catch(e){ alert('Die Datei konnte nicht gelesen werden.'); }
+    };
+    app.querySelector('#new').onclick = () => {
+      const today = todayISO();
+      const existing = sessions.find(s=>s.date===today);
+      openEdit(existing ? existing.id : null);
+    };
+    app.querySelectorAll('[data-open]').forEach(b => b.onclick = () => openEdit(b.dataset.open));
+    app.querySelectorAll('[data-ex]').forEach(b => b.onclick = () => { view={name:'exercise', ex:b.dataset.ex}; render(); window.scrollTo(0,0); });
+    app.querySelectorAll('[data-goal]').forEach(b => b.onclick = () => { setGoal(Math.min(7, Math.max(1, goal + Number(b.dataset.goal)))); render(); });
+  }
+
+  function openEdit(id){
+    const s = id ? sessions.find(x=>x.id===id) : null;
+    draft = s ? JSON.parse(JSON.stringify({id:s.id, date:s.date, exercises:s.exercises||[]}))
+              : {id:'s'+Date.now(), date:todayISO(), exercises:[]};
+    draft.isNew = !s;
+    view = {name:'edit'};
+    render(); window.scrollTo(0,0);
+  }
+
+  function renderEdit(){
+    const d = draft;
+    const exHtml = d.exercises.map((e,ei) => {
+      const l = lastFor(e.name, d.id);
+      const lastTxt = l ? `Letztes Mal (${esc(fmtDate(l.date))}): ${l.sets.map(t=>`${fmt(num(t.kg))} kg × ${esc(t.reps)}`).join(', ')}` : 'Erstes Mal eingetragen';
+      const sets = e.sets.map((t,si) => `
+        <div class="set">
+          <span class="i">${si+1}</span>
+          <input inputmode="numeric" aria-label="Wiederholungen Satz ${si+1}" data-f="reps" data-e="${ei}" data-s="${si}" value="${esc(t.reps)}">
+          <input inputmode="decimal" aria-label="Gewicht Satz ${si+1}" data-f="kg" data-e="${ei}" data-s="${si}" value="${esc(t.kg)}">
+          <button aria-label="Satz ${si+1} entfernen" data-delset="${ei}:${si}">✕</button>
+        </div>`).join('');
+      return `
+        <section class="ex">
+          <div class="ex-h"><h3>${esc(e.name)}</h3><button class="ghost" data-delex="${ei}">Entfernen</button></div>
+          <div class="last">${lastTxt}</div>
+          ${e.sets.length ? '<div class="lbls"><span></span><span>Wdh.</span><span>kg</span><span></span></div>' : ''}
+          ${sets}
+          <button class="block" data-addset="${ei}">Satz hinzufügen</button>
+          <div class="muted" style="font-size:.88rem;margin-top:8px">Volumen: <span data-vol="${ei}">${fmt(e.sets.reduce((a,t)=>a+num(t.reps)*num(t.kg),0))}</span> kg</div>
+        </section>`;
+    }).join('');
+
+    app.innerHTML = `
+      <div class="bar">
+        <button class="ghost" id="back">‹ Übersicht</button>
+        <input type="date" id="date" value="${esc(d.date)}" style="width:auto" aria-label="Datum">
+      </div>
+      <h1>${esc(fmtDate(d.date))}</h1>
+      <div class="status" id="status" aria-live="polite"></div>
+      ${exHtml || '<p class="muted">Füge deine erste Übung hinzu.</p>'}
+      <div class="add">
+        <input id="exname" list="exlist" placeholder="Übung, z. B. Latziehen" aria-label="Neue Übung">
+        <button class="primary" id="addex">Hinzufügen</button>
+      </div>
+      <datalist id="exlist">${allExerciseNames().map(n=>`<option value="${esc(n)}">`).join('')}</datalist>
+      <p class="muted" style="font-size:.95rem">Gesamtvolumen: <strong id="tot">${fmt(volume(d))}</strong> kg</p>
+      <div class="foot">
+        <button class="primary" id="done">Fertig</button>
+        ${d.isNew ? '' : '<button class="danger" id="del">Training löschen</button>'}
+      </div>
+    `;
+
+    app.querySelector('#back').onclick = finish;
+    app.querySelector('#done').onclick = finish;
+    app.querySelector('#date').onchange = ev => { if (ev.target.value){ d.date = ev.target.value; app.querySelector('h1').textContent = fmtDate(d.date); if (d.exercises.length) scheduleSave(); } };
+    const addEx = () => {
+      const inp = app.querySelector('#exname'); const name = inp.value.trim(); if (!name) { inp.focus(); return; }
+      const l = lastFor(name, d.id);
+      const proto = l ? l.sets[l.sets.length-1] : {reps:'8', kg:''};
+      d.exercises.push({name, sets:[{reps:String(proto.reps), kg:String(proto.kg)}]});
+      scheduleSave(); renderEdit();
+      const sets = app.querySelectorAll(`[data-e="${d.exercises.length-1}"][data-f="kg"]`); if (sets[0]) sets[0].focus();
+    };
+    app.querySelector('#addex').onclick = addEx;
+    app.querySelector('#exname').onkeydown = ev => { if (ev.key==='Enter') addEx(); };
+    app.querySelectorAll('input[data-f]').forEach(inp => inp.oninput = () => {
+      const e = d.exercises[inp.dataset.e]; e.sets[inp.dataset.s][inp.dataset.f] = inp.value.trim();
+      app.querySelector(`[data-vol="${inp.dataset.e}"]`).textContent = fmt(e.sets.reduce((a,t)=>a+num(t.reps)*num(t.kg),0));
+      app.querySelector('#tot').textContent = fmt(volume(d));
+      scheduleSave();
+    });
+    app.querySelectorAll('[data-addset]').forEach(b => b.onclick = () => {
+      const e = d.exercises[b.dataset.addset]; const prev = e.sets[e.sets.length-1] || {reps:'8',kg:''};
+      e.sets.push({reps:prev.reps, kg:prev.kg}); scheduleSave(); renderEdit();
+    });
+    app.querySelectorAll('[data-delset]').forEach(b => b.onclick = () => {
+      const [ei,si] = b.dataset.delset.split(':').map(Number); d.exercises[ei].sets.splice(si,1); scheduleSave(); renderEdit();
+    });
+    app.querySelectorAll('[data-delex]').forEach(b => b.onclick = () => {
+      const ei = Number(b.dataset.delex);
+      if (b.dataset.armed){ d.exercises.splice(ei,1); scheduleSave(); renderEdit(); }
+      else { b.dataset.armed = '1'; b.textContent = 'Wirklich entfernen?'; b.style.color = 'var(--danger)'; }
+    });
+    const del = app.querySelector('#del');
+    if (del) del.onclick = async () => {
+      if (!del.dataset.armed){ del.dataset.armed = '1'; del.textContent = 'Nochmal tippen zum Löschen'; return; }
+      clearTimeout(saveTimer);
+      try{ await remove(d.id); draft=null; view={name:'home'}; render(); }
+      catch(e){ setStatus('Löschen fehlgeschlagen. Bitte erneut versuchen.'); }
+    };
+  }
+
+  async function finish(){
+    if (draft && draft.exercises.length) await flush();
+    else clearTimeout(saveTimer);
+    draft = null; view = {name:'home'}; render(); window.scrollTo(0,0);
+  }
+
+  function renderExercise(name){
+    const key = name.toLowerCase();
+    const pts = sorted().reverse().map(s => {
+      const e = (s.exercises||[]).find(x=>x.name.trim().toLowerCase()===key);
+      if (!e || !e.sets.length) return null;
+      const top = Math.max(...e.sets.map(t=>num(t.kg)));
+      return {date:s.date, top, sets:e.sets, vol:e.sets.reduce((a,t)=>a+num(t.reps)*num(t.kg),0)};
+    }).filter(Boolean);
+
+    let chart = '';
+    if (pts.length > 1){
+      const W = Math.max(320, pts.length*48), H = 160, p = 28;
+      const min = Math.min(...pts.map(x=>x.top)), max = Math.max(...pts.map(x=>x.top));
+      const rng = (max-min) || 1;
+      const xy = pts.map((x,i)=>[p + i*(W-2*p)/(pts.length-1), H-p - (x.top-min)/rng*(H-2*p)]);
+      chart = `<div class="chart"><svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" role="img" aria-label="Höchstes Gewicht pro Training">
+        <polyline fill="none" stroke="var(--accent)" stroke-width="3" points="${xy.map(a=>a.join(',')).join(' ')}"/>
+        ${xy.map((a,i)=>`<circle cx="${a[0]}" cy="${a[1]}" r="5" fill="var(--plate)" stroke="var(--ink)" stroke-width="1.5"/><text x="${a[0]}" y="${a[1]-10}" text-anchor="middle" font-size="12" fill="var(--ink)">${fmt(pts[i].top)}</text>`).join('')}
+      </svg></div>`;
+    }
+
+    app.innerHTML = `
+      <div class="bar"><button class="ghost" id="back">‹ Übersicht</button></div>
+      <h1>${esc(name)}</h1>
+      <p class="muted">Höchstes Gewicht pro Training</p>
+      ${chart || '<p class="muted">Ab dem zweiten Training siehst du hier deinen Verlauf.</p>'}
+      <div class="list" style="margin-top:16px">
+        ${pts.slice().reverse().map(x=>`<div class="row"><span><span class="t">${esc(fmtDate(x.date))}</span><br><span class="s">${x.sets.map(t=>`${fmt(num(t.kg))} × ${esc(t.reps)}`).join(', ')}</span></span><span class="s">${fmt(x.vol)} kg</span></div>`).join('')}
+      </div>`;
+    app.querySelector('#back').onclick = () => { view={name:'home'}; render(); window.scrollTo(0,0); };
+  }
+
+  init();
+})();
+</script>
+</body>
+</html>
